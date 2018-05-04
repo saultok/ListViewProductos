@@ -41,6 +41,8 @@ public class ModificarActivity extends AppCompatActivity {
         f = Arrays.binarySearch(categoria,b);
         spinner.setSelection(f);
 
+
+
     }
     public  void  ModificarDatos(View w){
         Intent i = new Intent();
