@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
                 txt.setText("Categoria elegido: " + lcategoria.get(position));
             }
         });
+
     }
 
     @Override
@@ -56,7 +58,10 @@ public class MainActivity extends AppCompatActivity {
             lista = (ListView) findViewById(R.id.lista);
               actualizarTabla();
 
+        registerForContextMenu(lista);
+
     }
+
 
 
     public void llamaVentana(View w){
@@ -74,9 +79,17 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this,cad,Toast.LENGTH_LONG).show();
         String c = data.getStringExtra("Categoria");
         Toast.makeText(this,c,Toast.LENGTH_LONG).show();*/
-       lproductos.add(data.getStringExtra("Producto"));
-       lcategoria.add(data.getStringExtra("Categoria"));
-        actualizarTabla();
+       if(requestCode == 1234) {
+           lproductos.add(data.getStringExtra("Producto"));
+           lcategoria.add(data.getStringExtra("Categoria"));
+           actualizarTabla();
+       }
+        if (requestCode ==123) {
+           int posicion = data.getIntExtra("posicion",-1);
+            lproductos.set(posicion,data.getStringExtra("Producto"));
+            lcategoria.set(posicion,data.getStringExtra("Categoria"));
+            actualizarTabla();
+        }
     }
 
     @Override
@@ -91,13 +104,54 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.op_salir:
-                Toast.makeText(this,"saliendo",Toast.LENGTH_SHORT).show();
+               finish();
                 break;
                 case  R.id.op_info:
                     Toast.makeText(this,"Informacion",Toast.LENGTH_SHORT).show();
                     break;
         }
         return super.onOptionsItemSelected(item);
+    }
+///////////Menu contextual
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+
+        menu.setHeaderTitle(lista.getAdapter().getItem(info.position).toString());
+        getMenuInflater().inflate(R.menu.menu_emergente,menu);
+    }
+
+    ////// Modificar y Eliminar
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        switch (item.getItemId()){
+
+            case  R.id.emergente_1:
+                String nombre = lproductos. get(info.position);
+
+                Intent i = new Intent(this,ModificarActivity.class);
+                i.putExtra("Producto",lproductos.get(info.position).toString());
+                i.putExtra("Categoria",lcategoria.get(info.position).toString());
+                i.putExtra("posicion",info.position);
+                startActivityForResult(i,123);
+
+
+                break;
+
+            case  R.id.emergente_2:
+                String nombre2 = lproductos. get(info.position);
+                lproductos.remove(info.position);
+                lcategoria.remove(info.position);
+                actualizarTabla();
+                break;
+
+        }
+
+        return true;
     }
 }
 

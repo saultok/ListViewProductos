@@ -16,7 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AgregarActivity"></activity>
+        <activity android:name=".AgregarActivity" />
+        <activity android:name=".ModificarActivity"></activity>
     </application>
 
 </manifest>
